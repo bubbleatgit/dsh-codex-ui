@@ -1,6 +1,6 @@
 {
   "name": "@michengai/dsh-codex-ui",
-  "version": "1.1.32",
+  "version": "1.1.32-ssh.1",
   "description": "DSH Codex UI — 为 DeepSeek Harness Web 提供 Codex 风格侧栏、工作区会话树、全局搜索和轮次导航 · A Codex-style sidebar, workspace session tree, global search, and turn navigation for DSH Web",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -67,7 +67,8 @@
     }
   },
   "scripts": {
-    "build": "tsc --noEmit && tsdown",
+    "build": "tsc --noEmit && tsdown && node scripts/inline-ssh-css.mjs",
+    "deploy:profile": "node scripts/deploy-profile.mjs",
     "typecheck": "tsc --noEmit",
     "test": "pnpm run typecheck && vitest run && tsdown && node tests/run-assertions.mjs && pnpm run test:layout",
     "test:host": "node scripts/verify-settings-exit.mjs",
@@ -121,7 +122,7 @@
     "diff": "^9.0.0",
     "shiki": "^4.3.1",
     "simple-icons": "16.31.0",
-    "@types/jsdom": "^30.0.0",
+    "@tsdown/css": "0.22.14",    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.0.0",
     "@types/react": "~18.3.1",
     "@types/react-dom": "^18.3.7",
@@ -136,6 +137,7 @@
     "workflow-yaml": "npm:yaml@2.9.0"
   },
   "dependencies": {
+    "@linxin666/dsh-ssh": "0.3.18",
     "lucide-react": "^1.39.0"
   }
 }

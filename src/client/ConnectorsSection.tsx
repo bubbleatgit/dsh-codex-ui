@@ -5,6 +5,7 @@ import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
 import { CODEX_UI_API_ENDPOINTS } from '../business-api.ts'
 import { NS } from './locales.ts'
 import { currentSessionId } from './session-host.ts'
+import { SshConnectorPanel } from './SshConnectorPanel.tsx'
 import { userErrorText } from './user-error.ts'
 import { BusinessRequestError, businessRequestErrorKey } from './business-request-error.ts'
 
@@ -144,5 +145,7 @@ export function ConnectorsSection({ sessionStore, startPromptSession, t }: Conne
       : marketAvailable
         ? <ConnectorMarket startPromptSession={startPromptSession} t={t} />
         : <><h2>{t('connectors.title')}</h2><p>{t('connectors.description')}</p><NativeConnectorList sessionStore={sessionStore} t={t} /></>}
+    {/* dsh-ssh 在本插件接管侧栏后失去了它自己的入口，SSH 面板嵌入连接器页兜底。 */}
+    <SshConnectorPanel />
   </section>
 }

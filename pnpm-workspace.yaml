@@ -39,6 +39,8 @@ allowBuilds:
   esbuild: true
   protobufjs: false
   koffi: false
+  cpu-features: false
+  ssh2: false
 
 minimumReleaseAgeExclude:
   - '@michengai/dsh-agency-agents@0.1.3 || 0.1.4 || 0.1.20 || 0.1.21 || 0.1.22 || 0.1.23 || 0.1.24 || 0.1.25 || 0.1.29 || 0.1.30 || 0.1.33 || 0.1.34 || 0.1.35 || 0.1.36 || 0.1.40 || 0.1.41 || 0.1.42 || 0.1.43 || 0.1.44 || 1.0.1 || 1.0.3 || 1.0.5 || 1.0.6 || 1.0.7 || 1.0.9 || 1.0.11'
@@ -81,3 +83,4 @@ minimumReleaseAgeExclude:
   - '@deepseek-ai/dsh-scope@0.1.7-rc.1 || 0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
   - '@deepseek-ai/dsh-util-workspace-path@0.1.7-rc.1 || 0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
   - '@deepseek-ai/dsh-util-code-language@0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
+  - '@linxin666/dsh-ssh@0.3.18'
