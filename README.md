@@ -176,6 +176,49 @@ dsh plugin --profile web add .
 
 New features should reuse existing DSH slots and public services. Do not depend on private host DOM or write conversation records.
 
+## Fork change: @linxin666/dsh-ssh embedded in Settings → Connectors
+
+This repository is a personal fork of MichengAI/dsh-codex-ui. The one functional
+change: the dsh-ssh operations panel (Hosts / Terminal / Transfer / Tunnels /
+Cluster) is embedded into the **Connectors** section of the settings page.
+
+Why here: dsh-ssh mounts its panel through an injected native-sidebar row plus a
+center-column takeover. This plugin replaces the sidebar and settings shell, so
+that entry never renders; the Connectors page is self-drawn and exposes no slot,
+so the fix belongs in this repo.
+
+How it works:
+
+- New [src/client/SshConnectorPanel.tsx](src/client/SshConnectorPanel.tsx) imports the tab
+  components from `@linxin666/dsh-ssh/src/client/panel/*` (the package publishes sources
+  under `./src/*`), composed over a shared `SshApi` singleton; styles reuse dsh-ssh's CSS
+  module and copy follows its built-in dictionaries.
+- [src/client/ConnectorsSection.tsx](src/client/ConnectorsSection.tsx) renders
+  `<SshConnectorPanel />` after the MCP market / native connector list.
+- [tsdown.config.ts](tsdown.config.ts) force-bundles `@linxin666/dsh-ssh` and `@xterm/*`
+  (`alwaysBundle` needs regexes for their subpath imports; the browser module table has
+  neither).
+- [scripts/inline-ssh-css.mjs](scripts/inline-ssh-css.mjs) folds the CSS-module output back
+  into `client.js` after the build: tsdown's `css.inject` only emits a relative
+  `import './style.css'`, which the single-file plugin loader cannot serve.
+- The dsh-ssh host half (`/api/dsh-ssh`, connection pool, agent tools) still comes from the
+  installed `@linxin666/dsh-ssh` plugin; this fork embeds UI only.
+
+### Deploying locally (profiles with the minimumReleaseAge supply-chain policy)
+
+`dsh plugin --profile web add link:...` is rejected there because the lockfile legitimately
+contains entries younger than the cutoff. Overwrite the installed package in place instead
+(dsh-client-hmr stat-polls mounted bundles every 500ms, so file changes take effect without
+a host restart):
+
+```powershell
+pnpm build
+pnpm deploy:profile   # node scripts/deploy-profile.mjs — robocopy /MIR into the profile
+```
+
+Then hard-refresh the browser (Ctrl+Shift+R). Any later profile `pnpm install` (including
+dshmarket upgrades) restores the published package — re-run `pnpm build && pnpm deploy:profile`.
+
 ## License
 
 This project is licensed under [Apache License 2.0](LICENSE).

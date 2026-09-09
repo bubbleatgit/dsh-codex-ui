@@ -176,6 +176,43 @@ dsh plugin --profile web add .
 
 新增功能应复用已有 DSH 插槽和公开服务；不要依赖宿主私有 DOM 或写入会话数据。
 
+## Fork 改动：把 @linxin666/dsh-ssh 嵌入「设置 → 连接器」
+
+本仓库是 MichengAI/dsh-codex-ui 的个人 fork，唯一功能改动：`@linxin666/dsh-ssh` 的 SSH 运维面板
+（主机 / 终端 / 传输 / 隧道 / 集群）嵌入设置页的**连接器**分区。
+
+背景：dsh-ssh 的面板挂载在原壳侧栏注入入口 + 中列接管，而本插件替换了侧栏与设置壳，导致它的入口
+永远不渲染、面板不可达。连接器页是本插件自绘、没有对外扩展点，因此改动落在本仓库。
+
+实现方式：
+
+- 新增 [src\client\SshConnectorPanel.tsx](src/client/SshConnectorPanel.tsx)：直接 import
+  `@linxin666/dsh-ssh/src/client/panel/*` 的选项卡组件（该包发布源码并开放 `./src/*`），
+  以共享的 `SshApi` 单例组合成内嵌面板；样式复用其 CSS Module，语言走其内置词典
+  （跟随文档语言，中英文自动切换）。
+- [src\client\ConnectorsSection.tsx](src/client/ConnectorsSection.tsx)：在 MCP 市场/原生连接器
+  列表之后渲染 `<SshConnectorPanel />`。
+- [tsdown.config.ts](tsdown.config.ts)：`@linxin666/dsh-ssh` 与 `@xterm/*` 强制内联
+  （`alwaysBundle` 需正则匹配子路径导入；浏览器加载器没有这些模块）。
+- [scripts/inline-ssh-css.mjs](scripts/inline-ssh-css.mjs)：构建后把 CSS Module 的样式体折叠进
+  `client.js`（tsdown 的 `css.inject` 对 CJS 浏览器产物只会留下无效 `import './style.css'`，
+  插件加载器只服务单个自包含脚本）。
+- SSH 的 Host 半（`/api/dsh-ssh` 路由、连接池、agent 工具）仍由已安装的 `@linxin666/dsh-ssh`
+  插件提供，本 fork 只嵌 UI。
+
+### 本地部署（profile 启用了 minimumReleaseAge 供应链策略时）
+
+`dsh plugin --profile web add link:...` 会因策略拒绝 lockfile 中发布未满时限的条目。改用原地产物
+镜像覆盖（dsh-client-hmr 每 500ms 轮询已挂载 bundle 的 mtime/size，换文件即生效，无需重启宿主）：
+
+```powershell
+pnpm build
+pnpm deploy:profile   # 即 node scripts/deploy-profile.mjs，robocopy /MIR 覆盖 profile 内该包
+```
+
+然后硬刷新浏览器（Ctrl+Shift+R）。注意：之后任何一次 profile `pnpm install`（含 dshmarket 升级）
+都会还原 npm 版 dsh-codex-ui，重新执行 `pnpm build && pnpm deploy:profile` 即可。
+
 ## 许可证
 
 本项目采用 [Apache License 2.0](LICENSE)。
