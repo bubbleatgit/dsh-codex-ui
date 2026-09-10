@@ -87,4 +87,4 @@ minimumReleaseAgeExclude:
   - '@deepseek-ai/cordis-plugin-loader@1.0.6'
   - '@deepseek-ai/cosmokit@1.8.6'
   - '@deepseek-ai/schemastery@3.18.5'
-  - '@linxin666/dsh-ssh@0.3.18'
+  - '@linxin666/dsh-ssh@0.3.18 || 0.3.20 || 0.4.4 || 0.4.7'
