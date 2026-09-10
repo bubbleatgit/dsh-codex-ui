@@ -202,16 +202,25 @@ dsh plugin --profile web add .
 
 ### 本地部署（profile 启用了 minimumReleaseAge 供应链策略时）
 
-`dsh plugin --profile web add link:...` 会因策略拒绝 lockfile 中发布未满时限的条目。改用原地产物
-镜像覆盖（dsh-client-hmr 每 500ms 轮询已挂载 bundle 的 mtime/size，换文件即生效，无需重启宿主）：
+用 `link:` 依赖把 fork 装进 profile（一次性），此后 profile 的任何 `pnpm install`（含 dshmarket 升级）
+都不会再把它还原成 npm 版：
 
 ```powershell
-pnpm build
-pnpm deploy:profile   # 即 node scripts/deploy-profile.mjs，robocopy /MIR 覆盖 profile 内该包
+# 一次性：先给 profile 清掉供应链时间窗闸门——pnpm 会在
+# ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION 里逐条列出存量条目，
+# 把它们以 '<name>@<version>' 形式加进 ~/.dsh/profiles/web/pnpm-workspace.yaml 的 minimumReleaseAgeExclude
+dsh plugin --profile web add link:D:\tmp\dsh-codex-ui
 ```
 
-然后硬刷新浏览器（Ctrl+Shift+R）。注意：之后任何一次 profile `pnpm install`（含 dshmarket 升级）
-都会还原 npm 版 dsh-codex-ui，重新执行 `pnpm build && pnpm deploy:profile` 即可。
+之后只需重建即可：dsh-client-hmr 每 500ms 轮询已挂载 bundle 的 mtime/size 并重哈希，
+**无需拷贝、无需重启宿主**：
+
+```powershell
+pnpm build          # 然后硬刷新浏览器（Ctrl+Shift+R）
+```
+
+`node scripts/deploy-profile.mjs`（`pnpm deploy:profile`）是 link 装不上时的兜底：原地产物镜像覆盖，
+但它扛不住下一次 profile install。
 
 ## 许可证
 

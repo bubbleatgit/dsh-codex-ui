@@ -206,18 +206,26 @@ How it works:
 
 ### Deploying locally (profiles with the minimumReleaseAge supply-chain policy)
 
-`dsh plugin --profile web add link:...` is rejected there because the lockfile legitimately
-contains entries younger than the cutoff. Overwrite the installed package in place instead
-(dsh-client-hmr stat-polls mounted bundles every 500ms, so file changes take effect without
-a host restart):
+Install the fork once through a `link:` dependency, so every later profile `pnpm install` (including
+dshmarket upgrades) keeps serving this build instead of silently restoring the published one:
 
 ```powershell
-pnpm build
-pnpm deploy:profile   # node scripts/deploy-profile.mjs — robocopy /MIR into the profile
+# one-time: clear the profile's release-age gate for the entries its lockfile already holds
+#   (pnpm names them in ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION) by adding
+#   '<name>@<version>' lines to minimumReleaseAgeExclude in
+#   ~/.dsh/profiles/web/pnpm-workspace.yaml
+dsh plugin --profile web add link:D:\tmp\dsh-codex-ui
 ```
 
-Then hard-refresh the browser (Ctrl+Shift+R). Any later profile `pnpm install` (including
-dshmarket upgrades) restores the published package — re-run `pnpm build && pnpm deploy:profile`.
+After that, a rebuild is all it takes — dsh-client-hmr stat-polls the mounted bundle every 500ms and
+re-hashes it, so no copy and no host restart are needed:
+
+```powershell
+pnpm build          # then hard-refresh the browser (Ctrl+Shift+R)
+```
+
+`node scripts/deploy-profile.mjs` (`pnpm deploy:profile`) mirrors the dist in place as a fallback for
+when a link install is not possible; it does not survive the next profile install.
 
 ## License
 

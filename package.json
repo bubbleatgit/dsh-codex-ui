@@ -143,7 +143,7 @@
     "workflow-yaml": "npm:yaml@2.9.0"
   },
   "dependencies": {
-    "@linxin666/dsh-ssh": "0.3.18",
+    "@linxin666/dsh-ssh": "0.3.20",
     "lucide-react": "^1.39.0"
   }
 }

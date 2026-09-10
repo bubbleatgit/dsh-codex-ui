@@ -1,17 +1,20 @@
 /**
- * Deploy the built package into the local DSH `web` profile in place.
+ * FALLBACK deploy: mirror the built package into the local DSH `web` profile
+ * in place.
  *
- * Why in-place: the profile applies pnpm's minimumReleaseAge supply-chain
- * policy, so `pnpm add link:./` refuses (the lockfile legitimately contains
- * packages younger than the cutoff). Copying the dist over
- * node_modules/@michengai/dsh-codex-ui is the compatible path:
- * dsh-client-hmr stat-polls every served bundle (500ms) and re-hashes changed
- * files into the module graph, so no host restart is needed — a page refresh
- * picks up the new revision.
+ * The supported install is a `link:` dependency
+ * (`dsh plugin --profile web add link:<repo>`), which survives profile
+ * installs and boots; after that, `pnpm build` alone is enough.
  *
- * Caveat: any later `pnpm install` in the profile (dshmarket updates included)
- * restores the published @michengai/dsh-codex-ui. Re-run `pnpm run deploy`
- * afterwards.
+ * Use this script only when a link install is not possible. It copies the dist
+ * over node_modules/@michengai/dsh-codex-ui; dsh-client-hmr stat-polls every
+ * served bundle (500ms) and re-hashes changed files into the module graph, so
+ * no host restart is needed — a page refresh picks up the new revision.
+ *
+ * Caveat (observed twice on 2026-09-10): any later `pnpm install` in the
+ * profile — dshmarket updates included — restores the published
+ * @michengai/dsh-codex-ui and the embedded SSH panel disappears with it.
+ * Re-run this script, or switch the profile to the link: install.
  *
  * Usage: node scripts/deploy-profile.mjs [--profile-dir <path>]
  */

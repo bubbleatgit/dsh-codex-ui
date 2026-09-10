@@ -72,4 +72,4 @@ minimumReleaseAgeExclude:
   - '@deepseek-ai/dsh-timeout@0.1.2-alpha.5 || 0.1.2-rc.1 || 0.1.6-alpha.1 || 0.1.6-alpha.2'
   - '@deepseek-ai/dsh-util-crypto@0.1.2-alpha.5 || 0.1.2-rc.1 || 0.1.6-alpha.1 || 0.1.6-alpha.2'
   - '@deepseek-ai/dsh-util-values@0.1.2-alpha.5 || 0.1.2-rc.1 || 0.1.6-alpha.1 || 0.1.6-alpha.2'
-  - '@linxin666/dsh-ssh@0.3.18'
+  - '@linxin666/dsh-ssh@0.3.18 || 0.3.20'
