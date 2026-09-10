@@ -122,7 +122,8 @@
     "diff": "^9.0.0",
     "shiki": "^4.3.1",
     "simple-icons": "16.31.0",
-    "@tsdown/css": "0.22.14",    "@types/jsdom": "^30.0.0",
+    "@tsdown/css": "0.22.14",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^26.0.0",
     "@types/react": "~18.3.1",
     "@types/react-dom": "^18.3.7",
@@ -137,7 +138,7 @@
     "workflow-yaml": "npm:yaml@2.9.0"
   },
   "dependencies": {
-    "@linxin666/dsh-ssh": "0.3.18",
+    "@linxin666/dsh-ssh": "0.4.4",
     "lucide-react": "^1.39.0"
   }
 }

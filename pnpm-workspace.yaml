@@ -83,4 +83,4 @@ minimumReleaseAgeExclude:
   - '@deepseek-ai/dsh-scope@0.1.7-rc.1 || 0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
   - '@deepseek-ai/dsh-util-workspace-path@0.1.7-rc.1 || 0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
   - '@deepseek-ai/dsh-util-code-language@0.1.7-rc.2 || 0.2.0-rc.1 || 0.2.0-rc.2'
-  - '@linxin666/dsh-ssh@0.3.18'
+  - '@linxin666/dsh-ssh@0.3.18 || 0.3.20 || 0.4.4'

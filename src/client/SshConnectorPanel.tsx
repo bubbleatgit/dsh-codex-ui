@@ -22,6 +22,7 @@
 import { useState } from 'react'
 import { SshApi } from '@linxin666/dsh-ssh/src/client/api.ts'
 import { tt } from '@linxin666/dsh-ssh/src/client/panel/helpers.ts'
+import { PanelController } from '@linxin666/dsh-ssh/src/client/panel/controller.ts'
 import { ClusterTab } from '@linxin666/dsh-ssh/src/client/panel/ClusterTab.tsx'
 import { HostsTab } from '@linxin666/dsh-ssh/src/client/panel/HostsTab.tsx'
 import { TerminalTab } from '@linxin666/dsh-ssh/src/client/panel/TerminalTab.tsx'
@@ -53,6 +54,19 @@ function getApi(): SshApi {
   return sharedApi
 }
 
+/**
+ * dsh-ssh 0.4's panel controller: the owner of the live terminal session id.
+ * Tabs here are conditionally rendered, so TerminalTab unmounts on every tab
+ * switch — the controller lets the next mount reattach to the same shell
+ * (with scrollback replayed by the host) instead of opening a second one.
+ * One instance for the page lifetime, same reasoning as sharedApi.
+ */
+let sharedController: PanelController | undefined
+function getController(): PanelController {
+  if (sharedController === undefined) sharedController = new PanelController()
+  return sharedController
+}
+
 const stylesheet = `
 .dcu-ssh-panel{margin-top:26px}.dcu-ssh-panel>.dcu-ssh-heading{display:flex;align-items:baseline;gap:8px;margin:0 0 4px}.dcu-ssh-panel>.dcu-ssh-heading>h2{margin:0;font-size:18px}.dcu-ssh-panel>.dcu-ssh-heading>span{color:var(--dsw-alias-label-tertiary);font-size:11px}.dcu-ssh-panel>p{margin:0 0 10px;color:var(--dsw-alias-label-secondary);font-size:12px}.dcu-ssh-frame{height:clamp(480px,calc(100vh - 240px),840px);border:1px solid var(--dsw-alias-border-l2);border-radius:10px;overflow:hidden;background:var(--dsw-alias-bg-base)}
 `
@@ -68,6 +82,7 @@ export function SshConnectorPanel() {
   const [activeTab, setActiveTab] = useState<SshTab>('hosts')
   const [connectRequest, setConnectRequest] = useState<ConnectRequest | null>(null)
   const api = getApi()
+  const controller = getController()
 
   const handleConnect = (alias: string): void => {
     setActiveTab('terminal')
@@ -104,7 +119,7 @@ export function SshConnectorPanel() {
           </div>
           <div className={sshCss.panelContent}>
             {activeTab === 'hosts' && <HostsTab api={api} onConnect={handleConnect} />}
-            {activeTab === 'terminal' && <TerminalTab api={api} presetAlias={connectRequest?.alias} requestId={connectRequest?.nonce} />}
+            {activeTab === 'terminal' && <TerminalTab api={api} controller={controller} sessionId={controller.getSnapshot().terminalSessionId} presetAlias={connectRequest?.alias} requestId={connectRequest?.nonce} />}
             {activeTab === 'transfer' && <TransferTab api={api} />}
             {activeTab === 'tunnels' && <TunnelsTab api={api} />}
             {activeTab === 'cluster' && <ClusterTab api={api} />}
